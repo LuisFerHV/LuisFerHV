@@ -5,10 +5,10 @@ $categorias = ['Bebidas calientes','Comida','Bebidas frías'];
 $categoria = $_GET['categoria'] ?? 'Todas';
 
 if ($categoria !== 'Todas' && in_array($categoria, $categorias, true)) {
-    $stmt = $pdo->prepare("SELECT * FROM productos WHERE disponible=1 AND categoria=? ORDER BY id");
+    $stmt = $pdo->prepare("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 AND categoria=? ORDER BY id");
     $stmt->execute([$categoria]);
 } else {
-    $stmt = $pdo->query("SELECT * FROM productos WHERE disponible=1 ORDER BY FIELD(categoria,'Bebidas calientes','Comida','Bebidas frías'), id");
+    $stmt = $pdo->query("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 ORDER BY FIELD(categoria,'Bebidas calientes','Comida','Bebidas frías'), id");
 }
 $productos = $stmt->fetchAll();
 ?>
@@ -30,6 +30,12 @@ $productos = $stmt->fetchAll();
 </section>
 
 <section class="menu-page section">
+    <a href="temporada.php" class="banner-temporada">
+        <span>🕯️</span>
+        <p>¿Buscas algo especial? Prueba nuestro <strong>menú de Día de Muertos</strong>, con datos curiosos de cada platillo.</p>
+        <span class="banner-flecha">Ver menú ›</span>
+    </a>
+
     <div class="filter-bar">
         <a class="<?php echo $categoria==='Todas'?'selected':''; ?>" href="menu.php">Todo</a>
         <?php foreach ($categorias as $cat): ?>

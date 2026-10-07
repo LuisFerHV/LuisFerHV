@@ -1,9 +1,8 @@
 <?php
-// Configuración para WampServer / MySQL
 $host = "localhost";
 $db   = "elmictlan";
 $user = "root";
-$pass = ""; // En WampServer normalmente root no tiene contraseña.
+$pass = "";
 
 try {
     $pdo = new PDO(

@@ -11,7 +11,8 @@
         <p><b>Zona de atención:</b> Ecatepec, Estado de México</p>
         <p><b>Dirección:</b> Ciudad Azteca Segunda Sección, C.P. 55120</p>
         <p>La delimitación del proyecto contempla entregas en esta zona.</p>
-        <a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=Ciudad+Azteca+Segunda+Seccion+Ecatepec+Estado+de+Mexico+55120">Abrir en Google Maps</a>
+        <a class="btn" target="_blank" rel="noopener" href=
+        "https://www.google.com/maps/search/?api=1&query=Ciudad+Azteca+Segunda+Seccion+Ecatepec+Estado+de+Mexico+55120">Abrir en Google Maps</a>
     </div>
     <div class="map-box"><div>📍</div><p>Ciudad Azteca<br>Ecatepec, Estado de México</p></div>
 </section>

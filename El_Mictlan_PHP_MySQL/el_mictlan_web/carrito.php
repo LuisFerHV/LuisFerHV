@@ -20,6 +20,8 @@ if ($carrito) {
         $items[] = ['p'=>$p,'cantidad'=>$cantidad,'subtotal'=>$subtotal];
     }
 }
+
+$totalProductos = array_sum(array_column($items, 'cantidad'));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -48,6 +50,15 @@ if ($carrito) {
 <?php else: ?>
     <div class="cart-layout">
         <div class="cart-items">
+
+            <div class="cart-toolbar">
+                <span><?php echo $totalProductos; ?> <?php echo $totalProductos === 1 ? 'producto' : 'productos'; ?></span>
+                <form action="eliminar_carrito.php" method="post" class="clear-form">
+                    <input type="hidden" name="accion" value="todo">
+                    <button type="submit" class="clear-btn">🗑 Vaciar carrito</button>
+                </form>
+            </div>
+
         <?php foreach ($items as $item): $p=$item['p']; ?>
             <div class="cart-item">
                 <img src="<?php echo htmlspecialchars($p['imagen']); ?>" alt="">
@@ -60,7 +71,13 @@ if ($carrito) {
                         <button type="submit">Actualizar</button>
                     </form>
                 </div>
-                <strong>$<?php echo number_format($item['subtotal'],2); ?></strong>
+                <div class="cart-item-side">
+                    <strong>$<?php echo number_format($item['subtotal'],2); ?></strong>
+                    <form action="eliminar_carrito.php" method="post" class="remove-form">
+                        <input type="hidden" name="id" value="<?php echo $p['id']; ?>">
+                        <button type="submit" class="remove-btn" aria-label="Eliminar <?php echo htmlspecialchars($p['nombre']); ?> del carrito">🗑 Eliminar</button>
+                    </form>
+                </div>
             </div>
         <?php endforeach; ?>
         </div>

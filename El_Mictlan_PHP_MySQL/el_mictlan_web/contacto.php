@@ -9,7 +9,7 @@
     <div class="contact-copy">
         <h2>Hablemos</h2>
         <p>¿Tienes dudas sobre el menú, pedidos o el proyecto? Puedes utilizar este formulario como interfaz de contacto.</p>
-        <div class="contact-detail">📞 <span>55 XXX XXXX</span></div>
+        <div class="contact-detail">📞 <span>55 4852 9756</span></div>
         <div class="contact-detail">✉️ <span>contacto@elmictlan.mx</span></div>
         <div class="contact-detail">📍 <span>Ciudad Azteca, Ecatepec, Estado de México</span></div>
     </div>

@@ -6,7 +6,7 @@
 <?php include "header.php"; ?>
 <section class="page-hero"><p>EL MICTLÁN</p><h1>Nuestra historia</h1><span>Tradición, cultura y sabor mexicano.</span></section>
 <section class="story section">
-    <img src="assets/dia-muertos.jpeg" alt="Tradición mexicana">
+    <img src="imn/dia-muertos.jpeg" alt="Tradición mexicana">
     <div>
         <h2>¿Por qué El Mictlán?</h2>
         <p>El nombre “El Mictlán” está inspirado en la cultura y mitología de nuestros antepasados mexicanos. El Mictlán era conocido como el lugar al que llegaban las almas después de la muerte.</p>

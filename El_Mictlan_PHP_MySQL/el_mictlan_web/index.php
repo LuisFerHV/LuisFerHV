@@ -26,7 +26,7 @@ $destacados = $stmt->fetchAll();
 
 <section class="essence section">
     <div class="essence-image">
-        <img src="assets/cafe-pan.jpeg" alt="Café y pan tradicional">
+        <img src="imn/cafe-pan.jpeg" alt="Café y pan tradicional">
     </div>
     <div class="essence-text">
         <h2>Nuestra esencia</h2>
@@ -52,15 +52,15 @@ $destacados = $stmt->fetchAll();
 
     <div class="category-grid">
         <a href="menu.php?categoria=Bebidas+calientes" class="category-card">
-            <img src="assets/cafe-granos.jpeg" alt="Bebidas calientes">
+            <img src="imn/cafe-granos.jpeg" alt="Bebidas calientes">
             <div><span>☕</span><h3>Bebidas calientes</h3><p>Chocolate, champurrado, café, ponche y atole.</p></div>
         </a>
         <a href="menu.php?categoria=Comida" class="category-card">
-            <img src="assets/cafe-pan.jpeg" alt="Comida">
+            <img src="imn/cafe-pan.jpeg" alt="Comida">
             <div><span>🥐</span><h3>Comida</h3><p>Tamales, pan de elote, churros y especialidades.</p></div>
         </a>
         <a href="menu.php?categoria=Bebidas+frías" class="category-card">
-            <img src="assets/cafe-pan.jpeg" alt="Bebidas frías">
+            <img src="imn/horchata.webp" alt="Bebidas frías">
             <div><span>🥤</span><h3>Bebidas frías</h3><p>Horchata, pozol, raspados y frapes.</p></div>
         </a>
     </div>
