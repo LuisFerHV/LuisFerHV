@@ -28,23 +28,24 @@ $paginaActual = basename($_SERVER['PHP_SELF']);
         <a class="<?php echo $paginaActual === 'index.php' ? 'active' : ''; ?>" href="index.php">Inicio</a>
         <a class="<?php echo $paginaActual === 'menu.php' ? 'active' : ''; ?>" href="menu.php">Menú</a>
         <a class="<?php echo $paginaActual === 'temporada.php' ? 'active' : ''; ?>" href="temporada.php">🕯️ Temporada</a>
-        <a class="<?php echo $paginaActual === 'nosotros.php' ? 'active' : ''; ?>" href="nosotros.php">Nuestra historia</a>
         <a class="<?php echo $paginaActual === 'estados.php' ? 'active' : ''; ?>" href="estados.php">🗺️ Estados</a>
+
+        <div class="nav-dropdown">
+            <button type="button" class="nav-dropdown-btn<?php echo in_array($paginaActual, ['ofrenda.php', 'radionovela.php', 'merch.php'], true) ? ' active' : ''; ?>"
+                    id="experienciasBtn" aria-haspopup="true" aria-expanded="false">
+                ✨ Experiencias <span class="nav-caret">▾</span>
+            </button>
+            <div class="nav-dropdown-menu" id="experienciasMenu">
+                <a class="<?php echo $paginaActual === 'ofrenda.php' ? 'active' : ''; ?>" href="ofrenda.php">🕯️ Ofrenda Virtual</a>
+                <a class="<?php echo $paginaActual === 'radionovela.php' ? 'active' : ''; ?>" href="radionovela.php">📻 Radionovela de terror</a>
+                <a class="<?php echo $paginaActual === 'merch.php' ? 'active' : ''; ?>" href="merch.php">🪅 Merch 3D</a>
+            </div>
+        </div>
+
+        <a class="<?php echo $paginaActual === 'nosotros.php' ? 'active' : ''; ?>" href="nosotros.php">Nuestra historia</a>
         <a class="<?php echo $paginaActual === 'ubicacion.php' ? 'active' : ''; ?>" href="ubicacion.php">Ubicación</a>
         <a class="<?php echo $paginaActual === 'contacto.php' ? 'active' : ''; ?>" href="contacto.php">Contacto</a>
         <a class="cart-link" href="carrito.php">🛒 <span id="cartCount"><?php echo $carritoCantidad; ?></span></a>
-        <button class="materias-btn" id="materiasBtn" type="button" aria-label="Mis materias" aria-haspopup="true" aria-expanded="false">📚</button>
         <button class="search-btn" id="searchBtn" type="button" aria-label="Buscar">⌕</button>
     </nav>
 </header>
-
-<div class="materias-overlay" id="materiasOverlay"></div>
-<aside class="materias-panel" id="materiasPanel" aria-hidden="true" aria-label="Panel de materias">
-    <div class="materias-header">
-        <h2>Mis materias</h2>
-        <button class="materias-cerrar" id="materiasCerrar" type="button" aria-label="Cerrar panel de materias">✕</button>
-    </div>
-    <div class="materias-lista" id="materiasLista">
-        <p class="materias-cargando">Cargando materias…</p>
-    </div>
-</aside>

@@ -1,16 +1,26 @@
+/* ---------------------------------------------------------------
+   Accesibilidad: algunos sistemas (por ejemplo Windows con "Efectos
+   de animación" desactivados) piden que las páginas no se muevan.
+   - false = las animaciones SIEMPRE se ven (ideal mientras desarrollas)
+   - true  = se respeta esa opción del sistema (recomendado al publicar)
+   --------------------------------------------------------------- */
 const RESPETAR_MOVIMIENTO_REDUCIDO = false;
 
 const reducirMovimiento = RESPETAR_MOVIMIENTO_REDUCIDO &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 if (reducirMovimiento) document.documentElement.classList.add("sin-movimiento");
 
+/* ---------------------------------------------------------------
+   Lluvia que cae en TODA la página. Cambia los números a tu gusto
+   (0 = quitar ese tipo). En celular se usa aproximadamente la mitad.
+   --------------------------------------------------------------- */
 const LLUVIA_MUERTOS = {
-    flores: 8,   
-    petalos: 5,  
-    granos: 12   
+    flores: 8,    // flores de cempasúchil
+    petalos: 5,   // pétalos sueltos
+    granos: 12    // granos de café
 };
 const LLUVIA_REYES = {
-    copos: 26 
+    copos: 26     // nieve, cuando el tema de Rosca de Reyes está activo
 };
 
 let toastTimer;
@@ -25,8 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
     iniciarTaza();
     iniciarVoltea();
     iniciarMapa();
-    iniciarMaterias();
+    iniciarDropdownNav();
     iniciarCambioTemporada();
+    iniciarOfrenda();
+    iniciarRadio();
+    iniciarPago();
 
     if (!reducirMovimiento) {
         iniciarLluvia();
@@ -34,6 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+/* ---------- Menú móvil ---------- */
 function iniciarMenu() {
     const menuToggle = document.getElementById("menuToggle");
     const mainNav = document.getElementById("mainNav");
@@ -46,6 +60,26 @@ function iniciarMenu() {
     });
 }
 
+/* ---------- Desplegable "Experiencias" del menú ---------- */
+function iniciarDropdownNav() {
+    const dropdown = document.querySelector(".nav-dropdown");
+    const boton = document.getElementById("experienciasBtn");
+    if (!dropdown || !boton) return;
+
+    boton.addEventListener("click", () => {
+        const abierto = dropdown.classList.toggle("abierto");
+        boton.setAttribute("aria-expanded", abierto ? "true" : "false");
+    });
+
+    document.addEventListener("click", evento => {
+        if (!dropdown.contains(evento.target)) {
+            dropdown.classList.remove("abierto");
+            boton.setAttribute("aria-expanded", "false");
+        }
+    });
+}
+
+/* ---------- Sombra del header al hacer scroll ---------- */
 function iniciarHeader() {
     const header = document.querySelector(".site-header");
     if (!header) return;
@@ -55,6 +89,7 @@ function iniciarHeader() {
     window.addEventListener("scroll", actualizar, { passive: true });
 }
 
+/* ---------- Flor de cempasúchil (SVG con los colores del sitio) ---------- */
 function florSVG() {
     let capas = "";
     const anillo = (n, cy, rx, ry, clase, giro) => {
@@ -68,6 +103,7 @@ function florSVG() {
     return `<svg viewBox="0 0 100 100" aria-hidden="true">${capas}<circle class="fl-c" cx="50" cy="50" r="7"/></svg>`;
 }
 
+/* ---------- Taza con vapor en el hero ---------- */
 function iniciarTaza() {
     const contenido = document.querySelector(".hero-content");
     if (!contenido) return;
@@ -92,10 +128,11 @@ function iniciarTaza() {
     contenido.prepend(taza);
 }
 
+/* ---------- Agregar al carrito ---------- */
 function iniciarCarrito() {
     document.querySelectorAll(".add-cart").forEach(button => {
         button.addEventListener("click", async (evento) => {
-            evento.stopPropagation();
+            evento.stopPropagation(); // no voltear la tarjeta si está dentro de .ofrenda-card
             const id = button.dataset.id;
             const etiqueta = button.dataset.label = button.dataset.label || button.textContent;
             button.disabled = true;
@@ -138,13 +175,17 @@ function actualizarContador(cantidad) {
 
     count.textContent = cantidad;
     count.classList.remove("bump");
-    void count.offsetWidth;
+    void count.offsetWidth; // reinicia la animación si se agrega varias veces seguidas
     count.classList.add("bump");
 }
+
+/* Una flor sale del botón y vuela hasta el contador del carrito */
 function volarAlCarrito(origen, alTerminar) {
     const destino = document.getElementById("cartCount");
     const a = origen.getBoundingClientRect();
     const b = destino ? destino.getBoundingClientRect() : null;
+
+    // Sin animación si no hay carrito visible (menú móvil cerrado) o si se pidió menos movimiento
     if (reducirMovimiento || !b || b.width === 0) {
         alTerminar();
         return;
@@ -172,6 +213,7 @@ function volarAlCarrito(origen, alTerminar) {
     };
 }
 
+/* ---------- Voltear tarjetas del menú de Día de Muertos ---------- */
 function iniciarVoltea() {
     document.querySelectorAll(".ofrenda-card").forEach(tarjeta => {
         const voltear = () => tarjeta.classList.toggle("flipped");
@@ -185,6 +227,8 @@ function iniciarVoltea() {
         });
     });
 }
+
+/* ---------- Eliminar del carrito ---------- */
 function iniciarEliminar() {
     document.querySelectorAll(".remove-form").forEach(form => {
         form.addEventListener("submit", evento => {
@@ -211,6 +255,7 @@ function iniciarEliminar() {
     }
 }
 
+/* ---------- Búsqueda ---------- */
 function iniciarBusqueda() {
     const searchBtn = document.getElementById("searchBtn");
     if (!searchBtn) return;
@@ -222,6 +267,7 @@ function iniciarBusqueda() {
     });
 }
 
+/* ---------- Grano de café (SVG con los colores del sitio) ---------- */
 function granoSVG() {
     return `<svg viewBox="0 0 100 100" aria-hidden="true">
         <g transform="rotate(25 50 50)">
@@ -231,10 +277,12 @@ function granoSVG() {
     </svg>`;
 }
 
+/* ---------- Lluvia de flores, pétalos y granos de café en toda la página ---------- */
 function iniciarLluvia() {
     construirLluvia();
 }
 
+/* Quita la lluvia actual (si había) y pone la que toca según el tema activo */
 function construirLluvia() {
     const anterior = document.querySelector(".lluvia");
     if (anterior) anterior.remove();
@@ -265,7 +313,7 @@ function construirLluvia() {
 
 function crearPiezaDeLluvia(tipo, i, alto) {
     const el = document.createElement("span");
-    let tam, velocidad;
+    let tam, velocidad; // velocidad en píxeles por segundo
 
     if (tipo === "flor") {
         el.className = "petal flor";
@@ -276,11 +324,11 @@ function crearPiezaDeLluvia(tipo, i, alto) {
         el.className = "petal grano";
         el.innerHTML = granoSVG();
         tam = 20 + Math.random() * 14;
-        velocidad = 110 + Math.random() * 60;
+        velocidad = 110 + Math.random() * 60; // los granos caen más rápido
     } else if (tipo === "copo") {
         el.className = "petal copo";
         tam = 5 + Math.random() * 9;
-        velocidad = 40 + Math.random() * 35;
+        velocidad = 40 + Math.random() * 35; // la nieve cae más despacio
     } else {
         el.className = "petal petal-hoja " + (i % 2 ? "petal-a" : "petal-b");
         tam = 14 + Math.random() * 12;
@@ -291,11 +339,12 @@ function crearPiezaDeLluvia(tipo, i, alto) {
     el.style.setProperty("--x", (Math.random() * 96).toFixed(1) + "%");
     el.style.setProperty("--s", tam.toFixed(1) + "px");
     el.style.setProperty("--d", duracion.toFixed(1) + "s");
-    el.style.setProperty("--delay", (-Math.random() * duracion).toFixed(1) + "s");
+    el.style.setProperty("--delay", (-Math.random() * duracion).toFixed(1) + "s"); // negativo = ya van cayendo al cargar
     el.style.setProperty("--drift", Math.round((Math.random() - 0.5) * 240) + "px");
     return el;
 }
 
+/* ---------- Aparición al hacer scroll (tarjetas y bloques principales) ---------- */
 function iniciarReveal() {
     if (!("IntersectionObserver" in window)) return;
 
@@ -319,7 +368,7 @@ function iniciarReveal() {
                 el.classList.add("visible");
                 observador.unobserve(el);
 
-                
+                // Al terminar se quita la clase para que el hover normal vuelva a funcionar
                 setTimeout(() => {
                     el.classList.remove("reveal", "visible");
                     el.style.removeProperty("--rd");
@@ -333,6 +382,7 @@ function iniciarReveal() {
     });
 }
 
+/* ---------- Mapa de México por estados (estados.php) ---------- */
 function iniciarMapa() {
     const datosEl = document.getElementById("datosEstados");
     if (!datosEl) return;
@@ -367,6 +417,171 @@ function iniciarMapa() {
         });
     });
 }
+
+/* ---------- Búsqueda ---------- */
+function iniciarBusqueda() {
+    const searchBtn = document.getElementById("searchBtn");
+    if (!searchBtn) return;
+
+    searchBtn.addEventListener("click", () => {
+        const text = prompt("¿Qué producto buscas?");
+        if (!text) return;
+        window.location.href = "menu.php?buscar=" + encodeURIComponent(text);
+    });
+}
+
+/* ---------- Grano de café (SVG con los colores del sitio) ---------- */
+function granoSVG() {
+    return `<svg viewBox="0 0 100 100" aria-hidden="true">
+        <g transform="rotate(25 50 50)">
+            <ellipse class="gr-c" cx="50" cy="50" rx="27" ry="40"/>
+            <path class="gr-l" d="M50 14 C36 38 64 62 50 86"/>
+        </g>
+    </svg>`;
+}
+
+/* ---------- Lluvia de flores, pétalos y granos de café en toda la página ---------- */
+function iniciarLluvia() {
+    construirLluvia();
+}
+
+/* Quita la lluvia actual (si había) y pone la que toca según el tema activo */
+function construirLluvia() {
+    const anterior = document.querySelector(".lluvia");
+    if (anterior) anterior.remove();
+
+    const esReyes = document.documentElement.getAttribute("data-tema") === "reyes";
+    const factor = window.innerWidth < 760 ? 0.55 : 1;
+    const alto = () => window.innerHeight + 90;
+
+    const capa = document.createElement("div");
+    capa.className = "lluvia";
+    capa.setAttribute("aria-hidden", "true");
+    capa.style.setProperty("--h", alto() + "px");
+    window.addEventListener("resize", () => capa.style.setProperty("--h", alto() + "px"));
+
+    const piezas = esReyes
+        ? [["copo", LLUVIA_REYES.copos]]
+        : [["flor", LLUVIA_MUERTOS.flores], ["petalo", LLUVIA_MUERTOS.petalos], ["grano", LLUVIA_MUERTOS.granos]];
+
+    piezas.forEach(([tipo, cantidad]) => {
+        const total = Math.round(cantidad * factor);
+        for (let i = 0; i < total; i++) {
+            capa.appendChild(crearPiezaDeLluvia(tipo, i, alto()));
+        }
+    });
+
+    document.body.appendChild(capa);
+}
+
+function crearPiezaDeLluvia(tipo, i, alto) {
+    const el = document.createElement("span");
+    let tam, velocidad; // velocidad en píxeles por segundo
+
+    if (tipo === "flor") {
+        el.className = "petal flor";
+        el.innerHTML = florSVG();
+        tam = 30 + Math.random() * 28;
+        velocidad = 70 + Math.random() * 40;
+    } else if (tipo === "grano") {
+        el.className = "petal grano";
+        el.innerHTML = granoSVG();
+        tam = 20 + Math.random() * 14;
+        velocidad = 110 + Math.random() * 60; // los granos caen más rápido
+    } else if (tipo === "copo") {
+        el.className = "petal copo";
+        tam = 5 + Math.random() * 9;
+        velocidad = 40 + Math.random() * 35; // la nieve cae más despacio
+    } else {
+        el.className = "petal petal-hoja " + (i % 2 ? "petal-a" : "petal-b");
+        tam = 14 + Math.random() * 12;
+        velocidad = 80 + Math.random() * 40;
+    }
+
+    const duracion = alto / velocidad;
+    el.style.setProperty("--x", (Math.random() * 96).toFixed(1) + "%");
+    el.style.setProperty("--s", tam.toFixed(1) + "px");
+    el.style.setProperty("--d", duracion.toFixed(1) + "s");
+    el.style.setProperty("--delay", (-Math.random() * duracion).toFixed(1) + "s"); // negativo = ya van cayendo al cargar
+    el.style.setProperty("--drift", Math.round((Math.random() - 0.5) * 240) + "px");
+    return el;
+}
+
+/* ---------- Aparición al hacer scroll (tarjetas y bloques principales) ---------- */
+function iniciarReveal() {
+    if (!("IntersectionObserver" in window)) return;
+
+    const selectores = [
+        ".essence-image", ".essence-text", ".features > div",
+        ".category-card", ".product-card",
+        ".story > *", ".location > *", ".contact > *",
+        ".cart-item", ".empty-cart"
+    ].join(",");
+
+    const elementos = document.querySelectorAll(selectores);
+    if (!elementos.length) return;
+
+    const observador = new IntersectionObserver(entradas => {
+        entradas
+            .filter(e => e.isIntersecting)
+            .forEach((entrada, i) => {
+                const el = entrada.target;
+                const retraso = Math.min(i, 6) * 110;
+                el.style.setProperty("--rd", retraso + "ms");
+                el.classList.add("visible");
+                observador.unobserve(el);
+
+                // Al terminar se quita la clase para que el hover normal vuelva a funcionar
+                setTimeout(() => {
+                    el.classList.remove("reveal", "visible");
+                    el.style.removeProperty("--rd");
+                }, 1000 + retraso);
+            });
+    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+
+    elementos.forEach(el => {
+        el.classList.add("reveal");
+        observador.observe(el);
+    });
+}
+
+/* ---------- Mapa de México por estados (estados.php) ---------- */
+function iniciarMapa() {
+    const datosEl = document.getElementById("datosEstados");
+    if (!datosEl) return;
+
+    let datos = {};
+    try {
+        datos = JSON.parse(datosEl.textContent);
+    } catch (error) {
+        return;
+    }
+
+    const titulo = document.getElementById("mapaPanelTitulo");
+    const texto = document.getElementById("mapaPanelTexto");
+    let actual = null;
+
+    const mostrar = id => {
+        const info = datos[id];
+        if (!info) return;
+        titulo.textContent = info.nombre;
+        texto.textContent = info.texto;
+    };
+
+    document.querySelectorAll(".estado").forEach(estado => {
+        estado.addEventListener("mouseenter", () => mostrar(estado.id));
+        estado.addEventListener("focus", () => mostrar(estado.id));
+
+        estado.addEventListener("click", () => {
+            if (actual) actual.classList.remove("activo");
+            estado.classList.add("activo");
+            actual = estado;
+            mostrar(estado.id);
+        });
+    });
+}
+
+/* ---------- Panel de materias (junto al carrito) ---------- */
 function iniciarMaterias() {
     const boton = document.getElementById("materiasBtn");
     const overlay = document.getElementById("materiasOverlay");
@@ -653,6 +868,8 @@ function iniciarMaterias() {
         });
     }
 }
+
+/* ---------- Botón de temporada (dentro de temporada.php): Día de Muertos ↔ Día de Reyes ---------- */
 function iniciarCambioTemporada() {
     const boton = document.getElementById("cambioTemporadaBtn");
     if (!boton) return;
@@ -670,6 +887,259 @@ function iniciarCambioTemporada() {
         );
     });
 }
+
+/* ---------- Ofrenda Virtual (ofrenda.php) ---------- */
+function iniciarOfrenda() {
+    const grid = document.getElementById("altarGrid");
+    if (!grid) return;
+
+    const abrirBtn = document.getElementById("abrirDedicatoria");
+    const overlay = document.getElementById("dedicatoriaOverlay");
+    const modal = document.getElementById("dedicatoriaModal");
+    const cerrarBtn = document.getElementById("cerrarDedicatoria");
+    const form = document.getElementById("formDedicatoria");
+
+    const abrirModal = () => {
+        overlay.classList.add("abierto");
+        modal.classList.add("abierto");
+        modal.setAttribute("aria-hidden", "false");
+    };
+    const cerrarModal = () => {
+        overlay.classList.remove("abierto");
+        modal.classList.remove("abierto");
+        modal.setAttribute("aria-hidden", "true");
+    };
+
+    abrirBtn.addEventListener("click", abrirModal);
+    cerrarBtn.addEventListener("click", cerrarModal);
+    overlay.addEventListener("click", cerrarModal);
+    document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarModal(); });
+
+    function crearVela(m) {
+        const item = document.createElement("div");
+        item.className = "altar-item";
+        item.innerHTML = `
+            <div class="altar-item-vela">🕯️</div>
+            ${m.foto ? `<img class="altar-foto" src="${m.foto}" alt="">` : ""}
+            <p class="altar-nombre"></p>
+            <p class="altar-mensaje"></p>
+            ${m.de_parte_de ? '<p class="altar-firma"></p>' : ""}
+            <p class="altar-fecha"></p>
+        `;
+        item.querySelector(".altar-nombre").textContent = m.nombre_difunto;
+        item.querySelector(".altar-mensaje").textContent = m.mensaje;
+        if (m.de_parte_de) item.querySelector(".altar-firma").textContent = "— " + m.de_parte_de;
+        item.querySelector(".altar-fecha").textContent = m.fecha;
+        return item;
+    }
+
+    async function cargar() {
+        try {
+            const respuesta = await fetch("obtener_ofrenda.php");
+            const datos = await respuesta.json();
+            grid.innerHTML = "";
+
+            if (!datos.ok) {
+                grid.innerHTML = '<p class="altar-cargando">' + (datos.error || "No se pudo cargar la ofrenda.") + '</p>';
+                return;
+            }
+            if (!datos.mensajes.length) {
+                grid.innerHTML = '<p class="altar-cargando">Sé el primero en encender una veladora 🕯️</p>';
+                return;
+            }
+            datos.mensajes.forEach(m => grid.appendChild(crearVela(m)));
+        } catch (error) {
+            grid.innerHTML = '<p class="altar-cargando">No se pudo cargar la ofrenda.</p>';
+        }
+    }
+
+    form.addEventListener("submit", async evento => {
+        evento.preventDefault();
+        const boton = form.querySelector('button[type="submit"]');
+        boton.disabled = true;
+
+        try {
+            const respuesta = await fetch("agregar_ofrenda.php", {
+                method: "POST",
+                body: new FormData(form)
+            });
+            const datos = await respuesta.json();
+
+            if (datos.ok) {
+                const vacio = grid.querySelector(".altar-cargando");
+                if (vacio) vacio.remove();
+                grid.prepend(crearVela(datos.mensaje));
+                form.reset();
+                cerrarModal();
+                showToast("🕯️ Tu dedicatoria ya está en la ofrenda");
+            } else {
+                showToast(datos.error || "No se pudo guardar", "error");
+            }
+        } catch (error) {
+            showToast("Error de conexión", "error");
+        } finally {
+            boton.disabled = false;
+        }
+    });
+
+    cargar();
+}
+
+/* ---------- Reproductor de la radionovela (radionovela.php) ---------- */
+function iniciarRadio() {
+    const audio = document.getElementById("radioAudio");
+    if (!audio) return;
+
+    const playBtn = document.getElementById("radioPlay");
+    const barra = document.getElementById("radioBarra");
+    const actualEl = document.getElementById("radioActual");
+    const duracionEl = document.getElementById("radioDuracion");
+    const volumen = document.getElementById("radioVolumen");
+    const aviso = document.getElementById("radioAviso");
+
+    const formatear = segundos => {
+        if (!isFinite(segundos)) return "0:00";
+        const m = Math.floor(segundos / 60);
+        const s = Math.floor(segundos % 60).toString().padStart(2, "0");
+        return `${m}:${s}`;
+    };
+
+    playBtn.addEventListener("click", () => {
+        if (audio.paused) audio.play().catch(() => mostrarAviso());
+        else audio.pause();
+    });
+
+    audio.addEventListener("play", () => { playBtn.textContent = "⏸"; playBtn.classList.add("reproduciendo"); });
+    audio.addEventListener("pause", () => { playBtn.textContent = "▶"; playBtn.classList.remove("reproduciendo"); });
+
+    audio.addEventListener("loadedmetadata", () => {
+        duracionEl.textContent = formatear(audio.duration);
+    });
+    audio.addEventListener("timeupdate", () => {
+        actualEl.textContent = formatear(audio.currentTime);
+        if (audio.duration) barra.value = (audio.currentTime / audio.duration) * 100;
+    });
+    audio.addEventListener("error", mostrarAviso);
+
+    barra.addEventListener("input", () => {
+        if (audio.duration) audio.currentTime = (barra.value / 100) * audio.duration;
+    });
+    volumen.addEventListener("input", () => { audio.volume = volumen.value; });
+
+    function mostrarAviso() {
+        if (aviso) aviso.hidden = false;
+        playBtn.disabled = true;
+    }
+}
+
+/* ---------- Pago: tarjeta (visual) + PayPal (real), en confirmar.php ---------- */
+function iniciarPago() {
+    const form = document.getElementById("formPedido");
+    if (!form) return;
+
+    const tabTarjeta = document.getElementById("tabTarjeta");
+    const tabPaypal = document.getElementById("tabPaypal");
+    const panelTarjeta = document.getElementById("panelTarjeta");
+    const panelPaypal = document.getElementById("panelPaypal");
+    const metodoPago = document.getElementById("metodoPago");
+    const referenciaPago = document.getElementById("referenciaPago");
+
+    const cambiarTab = metodo => {
+        const esTarjeta = metodo === "tarjeta";
+        tabTarjeta.classList.toggle("activa", esTarjeta);
+        tabPaypal.classList.toggle("activa", !esTarjeta);
+        panelTarjeta.hidden = !esTarjeta;
+        panelPaypal.hidden = esTarjeta;
+    };
+    tabTarjeta.addEventListener("click", () => cambiarTab("tarjeta"));
+    tabPaypal.addEventListener("click", () => cambiarTab("paypal"));
+
+    /* ---- Tarjeta: solo una vista bonita + validación básica, nada se manda al servidor ---- */
+    const nombreInput = document.getElementById("tarjetaNombre");
+    const numeroInput = document.getElementById("tarjetaNumero");
+    const venceInput = document.getElementById("tarjetaVence");
+    const cvcInput = document.getElementById("tarjetaCvc");
+    const btnPagarTarjeta = document.getElementById("btnPagarTarjeta");
+
+    const nombreVista = document.getElementById("tarjetaNombreVista");
+    const numeroVista = document.getElementById("tarjetaNumeroVista");
+    const venceVista = document.getElementById("tarjetaVenceVista");
+    const marcaVista = document.getElementById("tarjetaMarca");
+
+    if (nombreInput) {
+        nombreInput.addEventListener("input", () => {
+            nombreVista.textContent = nombreInput.value.trim().toUpperCase() || "NOMBRE APELLIDO";
+        });
+
+        numeroInput.addEventListener("input", () => {
+            const limpio = numeroInput.value.replace(/\D/g, "").slice(0, 16);
+            numeroInput.value = limpio.replace(/(.{4})/g, "$1 ").trim();
+
+            const grupos = numeroInput.value.split(" ");
+            numeroVista.textContent = grupos.map((g, i) => (i < grupos.length - 1 || g.length === 4) ? g.padEnd(4, "•") : g.padEnd(4, "•")).join(" ")
+                || "•••• •••• •••• ••••";
+
+            marcaVista.textContent = limpio.startsWith("4") ? "VISA" : /^5[1-5]/.test(limpio) ? "MASTERCARD" : "";
+        });
+
+        venceInput.addEventListener("input", () => {
+            let v = venceInput.value.replace(/\D/g, "").slice(0, 4);
+            if (v.length >= 3) v = v.slice(0, 2) + "/" + v.slice(2);
+            venceInput.value = v;
+            venceVista.textContent = v || "MM/AA";
+        });
+
+        cvcInput.addEventListener("input", () => {
+            cvcInput.value = cvcInput.value.replace(/\D/g, "").slice(0, 4);
+        });
+
+        btnPagarTarjeta.addEventListener("click", () => {
+            const numero = numeroInput.value.replace(/\s/g, "");
+            if (!nombreInput.value.trim() || numero.length < 15 || !/^\d{2}\/\d{2}$/.test(venceInput.value) || cvcInput.value.length < 3) {
+                showToast("Revisa los datos de la tarjeta", "error");
+                return;
+            }
+            if (!form.reportValidity()) return;
+
+            btnPagarTarjeta.disabled = true;
+            btnPagarTarjeta.textContent = "Procesando pago...";
+
+            setTimeout(() => {
+                metodoPago.value = "Tarjeta";
+                referenciaPago.value = "DEMO-" + Date.now();
+                form.submit();
+            }, 1100);
+        });
+    }
+
+    /* ---- PayPal: botón real del SDK oficial ---- */
+    const contenedorPaypal = document.getElementById("paypalBotones");
+    if (contenedorPaypal && window.paypal) {
+        paypal.Buttons({
+            style: { color: "gold", shape: "pill", label: "paypal", height: 45 },
+
+            createOrder: (datos, acciones) => acciones.order.create({
+                purchase_units: [{
+                    amount: { value: (window.TOTAL_PEDIDO || 0).toFixed(2), currency_code: "MXN" }
+                }]
+            }),
+
+            onApprove: (datos, acciones) => acciones.order.capture().then(detalle => {
+                if (!form.reportValidity()) return;
+                metodoPago.value = "PayPal";
+                referenciaPago.value = detalle.id;
+                form.submit();
+            }),
+
+            onError: () => showToast("Hubo un problema con PayPal, intenta de nuevo", "error")
+
+        }).render("#paypalBotones");
+    } else if (contenedorPaypal) {
+        contenedorPaypal.innerHTML = '<p class="pago-aviso">No se pudo cargar PayPal (revisa tu conexión a internet).</p>';
+    }
+}
+
+/* ---------- Mensajes ---------- */
 function showToast(message, type = "ok") {
     let toast = document.getElementById("toast");
     if (!toast) {

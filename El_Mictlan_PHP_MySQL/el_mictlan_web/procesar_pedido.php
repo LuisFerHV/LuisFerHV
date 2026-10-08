@@ -12,9 +12,14 @@ $nombre = trim($_POST['nombre'] ?? '');
 $telefono = trim($_POST['telefono'] ?? '');
 $direccion = trim($_POST['direccion'] ?? '');
 $notas = trim($_POST['notas'] ?? '');
+$metodoPago = trim($_POST['metodo_pago'] ?? '');
+$referenciaPago = trim($_POST['referencia_pago'] ?? '');
 
 if ($nombre === '' || $telefono === '' || $direccion === '') {
     die("Faltan datos obligatorios. Regresa al formulario.");
+}
+if (!in_array($metodoPago, ['Tarjeta', 'PayPal'], true)) {
+    die("Elige una forma de pago antes de confirmar.");
 }
 
 try {
@@ -34,10 +39,10 @@ try {
     $numero = 'MICT-' . date('YmdHis') . '-' . random_int(100,999);
 
     $stmt = $pdo->prepare(
-        "INSERT INTO pedidos (numero_confirmacion,nombre_cliente,telefono,direccion,notas,total)
-         VALUES (?,?,?,?,?,?)"
+        "INSERT INTO pedidos (numero_confirmacion,nombre_cliente,telefono,direccion,notas,total,metodo_pago,referencia_pago)
+         VALUES (?,?,?,?,?,?,?,?)"
     );
-    $stmt->execute([$numero,$nombre,$telefono,$direccion,$notas,$total]);
+    $stmt->execute([$numero,$nombre,$telefono,$direccion,$notas,$total,$metodoPago,$referenciaPago ?: null]);
     $pedidoId = $pdo->lastInsertId();
 
     $detalle = $pdo->prepare(
@@ -82,6 +87,7 @@ try {
             <strong><?php echo htmlspecialchars($numero); ?></strong>
         </div>
         <p class="total-confirm">Total: <strong>$<?php echo number_format($total,2); ?></strong></p>
+        <p class="metodo-confirm">Pagado con: <strong><?php echo htmlspecialchars($metodoPago); ?></strong></p>
         <a class="btn" href="index.php">Volver al inicio</a>
     </div>
 </section>

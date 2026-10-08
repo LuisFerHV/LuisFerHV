@@ -5,10 +5,10 @@ $categorias = ['Bebidas calientes','Comida','Bebidas frías'];
 $categoria = $_GET['categoria'] ?? 'Todas';
 
 if ($categoria !== 'Todas' && in_array($categoria, $categorias, true)) {
-    $stmt = $pdo->prepare("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 AND categoria=? ORDER BY id");
+    $stmt = $pdo->prepare("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 AND categoria<>'Merch' AND categoria=? ORDER BY id");
     $stmt->execute([$categoria]);
 } else {
-    $stmt = $pdo->query("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 ORDER BY FIELD(categoria,'Bebidas calientes','Comida','Bebidas frías'), id");
+    $stmt = $pdo->query("SELECT * FROM productos WHERE disponible=1 AND temporada=0 AND es_reyes=0 AND categoria<>'Merch' ORDER BY FIELD(categoria,'Bebidas calientes','Comida','Bebidas frías'), id");
 }
 $productos = $stmt->fetchAll();
 ?>

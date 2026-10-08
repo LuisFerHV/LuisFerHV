@@ -642,6 +642,58 @@ input:focus,textarea:focus{box-shadow:0 0 0 3px #ca5f1826}
 
 
 /* =====================================================================
+   MAPA DE MÉXICO — DÍA DE MUERTOS POR ESTADO (estados.php)
+   ===================================================================== */
+
+.mapa-mexico{background:var(--crema)}
+.mapa-layout{
+    display:grid;grid-template-columns:1.5fr 1fr;gap:34px;
+    align-items:stretch;max-width:1200px;margin:0 auto
+}
+
+.mapa-caja{
+    background:#fff;border:1px solid #ead8ca;border-radius:14px;
+    padding:20px;box-shadow:0 10px 30px #5a2b1014;
+    display:flex;align-items:center;justify-content:center
+}
+
+.mapa-svg{width:100%;height:auto;max-height:560px}
+
+.estado{
+    fill:var(--dorado);stroke:var(--crema);stroke-width:1.1;
+    cursor:pointer;transform-box:fill-box;transform-origin:center;
+    transition:fill .25s,transform .25s,filter .25s;
+    outline:none
+}
+.estado:hover,
+.estado:focus-visible,
+.estado.activo{
+    fill:var(--naranja);
+    transform:scale(1.045);
+    filter:drop-shadow(0 6px 14px #00000045)
+}
+.estado:focus-visible{stroke:var(--cafe);stroke-width:1.6}
+
+.mapa-panel{
+    background:var(--cafe2);color:#fff;border-radius:14px;
+    padding:30px;display:flex;flex-direction:column;justify-content:center;
+    gap:10px;box-shadow:0 10px 30px #5a2b1014;
+    transition:background .3s
+}
+.mapa-panel-icono{font-size:34px;animation:sway 3s ease-in-out infinite}
+.mapa-panel h2{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--dorado)}
+.mapa-panel p{font-size:14px;line-height:1.6}
+
+.mapa-nota{text-align:center;font-size:12px;color:#8a7a6c;max-width:640px;margin:26px auto 4px}
+.mapa-credito{text-align:center;font-size:10px;color:#b6a596;margin-top:6px}
+
+@media(max-width:900px){
+    .mapa-layout{grid-template-columns:1fr}
+    .mapa-panel{min-height:140px}
+}
+
+
+/* =====================================================================
    PANEL DE MATERIAS (junto al carrito, en el header)
    ===================================================================== */
 
@@ -753,17 +805,28 @@ input:focus,textarea:focus{box-shadow:0 0 0 3px #ca5f1826}
     .materias-panel{width:100%}
 }
 
+
+/* =====================================================================
+   TEMA DE TEMPORADA: ROSCA DE REYES (se activa con el botón de temporada.php)
+   Ya NO cambia colores — solo qué productos se muestran y la lluvia
+   (pétalos/granos ↔ nieve). Los colores del sitio se quedan siempre
+   iguales, en las dos temporadas.
+   ===================================================================== */
+
+/* ---------- Copos de nieve (mismo sistema de lluvia, pieza nueva) ---------- */
 .copo{
     background:radial-gradient(circle,#ffffff 0%,#eaf3ff 55%,transparent 78%);
     border-radius:50%;filter:blur(.2px);
     box-shadow:0 0 5px 1px #6f8fc555, inset 0 0 2px #ffffffee
 }
 
+/* ---------- Mostrar/ocultar según el tema activo (temporada.php) ---------- */
 .tema-muertos{display:block}
 .tema-reyes{display:none}
 [data-tema="reyes"] .tema-muertos{display:none}
 [data-tema="reyes"] .tema-reyes{display:block}
 
+/* ---------- Botón grande para cambiar de temporada, dentro de temporada.php ---------- */
 .cambio-temporada{text-align:center;margin:-10px 0 40px}
 .cambio-temporada-btn{
     display:inline-flex;align-items:center;gap:10px;
@@ -779,5 +842,197 @@ input:focus,textarea:focus{box-shadow:0 0 0 3px #ca5f1826}
 [data-tema="reyes"] .cambio-temporada-btn .tema-reyes{display:inline}
 .cambio-temporada-btn .tema-reyes{display:none}
 
+/* El botón de materias y el de buscar heredan el dorado del tema sin tocarlos a mano */
 [data-tema="reyes"] .materias-btn:hover,
 [data-tema="reyes"] .search-btn:hover{color:var(--naranja)}
+
+
+/* =====================================================================
+   DESPLEGABLE "EXPERIENCIAS" EN LA NAVEGACIÓN
+   ===================================================================== */
+.nav-dropdown{position:relative}
+.nav-dropdown-btn{
+    background:none;border:0;font:inherit;font-size:14px;color:var(--texto);
+    padding:26px 0;cursor:pointer;display:flex;align-items:center;gap:4px;
+    transition:color .2s
+}
+.nav-dropdown-btn:hover,.nav-dropdown-btn.active{color:var(--naranja)}
+.nav-caret{font-size:10px;transition:transform .25s}
+.nav-dropdown:hover .nav-caret,
+.nav-dropdown.abierto .nav-caret{transform:rotate(180deg)}
+
+.nav-dropdown-menu{
+    position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(8px);
+    background:#fff;border-radius:10px;box-shadow:0 16px 40px #00000030;
+    padding:8px;display:flex;flex-direction:column;min-width:220px;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown.abierto .nav-dropdown-menu{
+    opacity:1;pointer-events:auto;transform:translateX(-50%) translateY(0)
+}
+.nav-dropdown-menu a{
+    padding:10px 14px!important;border-radius:6px;font-size:13.5px;
+    white-space:nowrap;color:var(--texto)
+}
+.nav-dropdown-menu a:hover,.nav-dropdown-menu a.active{background:var(--beige);color:var(--naranja)}
+.nav-dropdown-menu a.active:after{display:none}
+
+@media(max-width:760px){
+    .nav-dropdown-btn{padding:12px 0;width:100%;justify-content:space-between}
+    .nav-dropdown-menu{
+        position:static;transform:none;box-shadow:none;background:var(--beige);
+        opacity:1;pointer-events:none;max-height:0;overflow:hidden;padding:0;
+        transition:max-height .3s ease,padding .3s ease
+    }
+    .nav-dropdown.abierto .nav-dropdown-menu{max-height:260px;pointer-events:auto;padding:6px}
+}
+
+
+/* =====================================================================
+   MERCH 3D (merch.php)
+   ===================================================================== */
+.merch-hero{background:linear-gradient(#1a0f08e6,#1a0f08e6),url('imn/dia-muertos.jpeg') center/cover}
+.merch-card .product-image img{background:var(--beige);object-fit:contain;padding:14px}
+.merch-card .product-image span{background:var(--cafe2)}
+.merch-nota{text-align:center;color:#8a7a6c;font-size:12px;margin-top:30px}
+
+/* =====================================================================
+   RADIONOVELA (radionovela.php)
+   ===================================================================== */
+.radio{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:start}
+.radio-aparato{
+    position:relative;background:var(--cafe2);color:#fff;border-radius:16px;
+    padding:28px 26px;box-shadow:0 20px 45px #00000050;overflow:hidden
+}
+.radio-rejilla{display:flex;gap:6px;margin-bottom:18px;opacity:.5}
+.radio-rejilla span{flex:1;height:3px;background:var(--dorado);border-radius:2px}
+.radio-info h2{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--dorado)}
+.radio-capitulo{font-size:12px;color:#d9c7b8;margin-top:4px;margin-bottom:22px}
+
+.radio-controles{display:flex;flex-direction:column;gap:16px}
+.radio-play{
+    width:56px;height:56px;border-radius:50%;border:0;background:var(--naranja);
+    color:#fff;font-size:20px;cursor:pointer;transition:transform .2s,background .2s;
+    display:flex;align-items:center;justify-content:center
+}
+.radio-play:hover{transform:scale(1.08);background:var(--terracota)}
+.radio-play.reproduciendo{background:var(--terracota)}
+
+.radio-progreso{display:flex;align-items:center;gap:10px;font-size:11px;color:#d9c7b8}
+.radio-progreso input[type="range"]{flex:1;accent-color:var(--naranja)}
+.radio-volumen{display:flex;align-items:center;gap:8px;font-size:14px}
+.radio-volumen input[type="range"]{width:110px;accent-color:var(--naranja)}
+
+.radio-aviso{
+    margin-top:18px;background:#00000040;border:1px dashed #d9c7b866;
+    border-radius:8px;padding:10px 14px;font-size:12px;color:#f0e4d8;line-height:1.5
+}
+.radio-aviso code{background:#00000055;padding:1px 5px;border-radius:4px}
+
+.radio-sinopsis h2{font-family:'Cormorant Garamond',serif;font-size:28px;margin-bottom:12px}
+.radio-sinopsis p{font-size:14px;margin-bottom:14px}
+.radio-creditos{font-size:11px;color:#8a7a6c;font-style:italic}
+
+@media(max-width:900px){
+    .radio{grid-template-columns:1fr}
+}
+
+/* =====================================================================
+   OFRENDA VIRTUAL (ofrenda.php)
+   ===================================================================== */
+.ofrenda-processing-vacio{
+    max-width:700px;margin:0 auto;padding:70px 30px;text-align:center;
+    border:2px dashed #6e3a2277;border-radius:16px;color:#cbb6a3;font-size:14px;line-height:1.7
+}
+.altar-section{background:radial-gradient(ellipse at top,#2a160c 0%,var(--cafe) 70%);color:#fff}
+.altar-velas{margin-bottom:10px}
+.altar-cta{text-align:center;margin-bottom:40px}
+
+.altar-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    gap:22px;max-width:1200px;margin:0 auto
+}
+.altar-cargando{grid-column:1/-1;text-align:center;color:#cbb6a3;font-size:13px}
+
+.altar-item{
+    background:linear-gradient(160deg,#2a160c,var(--cafe2));
+    border:1px solid #6e3a2255;border-radius:12px;padding:20px;
+    text-align:center;box-shadow:0 10px 25px #00000040;
+    animation:rise .6s cubic-bezier(.2,.7,.2,1) backwards
+}
+.altar-item-vela{font-size:26px;animation:flama-emoji 1.6s ease-in-out infinite}
+@keyframes flama-emoji{0%,100%{transform:scale(1)}50%{transform:scale(1.15) translateY(-2px)}}
+
+.altar-foto{width:72px;height:72px;border-radius:50%;object-fit:cover;margin:10px auto;border:2px solid var(--dorado)}
+.altar-nombre{font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--dorado);margin-top:6px}
+.altar-mensaje{font-size:12.5px;color:#f0e4d8;margin:8px 0;line-height:1.5}
+.altar-firma{font-size:11px;color:#b6a089;font-style:italic}
+.altar-fecha{font-size:10px;color:#8a7461;margin-top:4px}
+
+/* ---------- Modal para dejar una dedicatoria ---------- */
+.materia-overlay-generico{
+    position:fixed;inset:0;background:#160b05aa;opacity:0;pointer-events:none;
+    transition:opacity .3s;z-index:150
+}
+.materia-overlay-generico.abierto{opacity:1;pointer-events:auto}
+
+.dedicatoria-modal{
+    position:fixed;top:50%;left:50%;transform:translate(-50%,-48%) scale(.95);
+    width:420px;max-width:92vw;max-height:88vh;overflow-y:auto;
+    background:var(--crema);border-radius:14px;box-shadow:0 25px 60px #00000050;
+    opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;z-index:151
+}
+.dedicatoria-modal.abierto{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+
+.dedicatoria-encabezado{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:18px 22px;background:var(--cafe2);color:#fff;border-radius:14px 14px 0 0
+}
+.dedicatoria-encabezado h2{font-family:'Cormorant Garamond',serif;font-size:22px}
+.dedicatoria-encabezado button{background:none;border:0;color:#fff;font-size:18px;cursor:pointer}
+
+.dedicatoria-form{padding:22px;display:flex;flex-direction:column;gap:14px}
+.dedicatoria-form label{font-size:13px;font-weight:600}
+.dedicatoria-foto-label{font-size:12px;font-weight:500;color:#8a7a6c}
+
+
+/* =====================================================================
+   PAGO: tarjeta (visual) + PayPal (real), en confirmar.php
+   ===================================================================== */
+.pago-seccion{margin-top:8px;border-top:1px solid #ead8ca;padding-top:20px}
+.pago-seccion h3{font-family:'Cormorant Garamond',serif;font-size:22px;margin-bottom:14px}
+
+.pago-tabs{display:flex;gap:10px;margin-bottom:18px}
+.pago-tab{
+    flex:1;border:1px solid #dbc5b5;background:#fff;border-radius:8px;
+    padding:12px;font-weight:600;font-size:13px;cursor:pointer;
+    transition:background .2s,border-color .2s,color .2s
+}
+.pago-tab.activa{background:var(--cafe);color:#fff;border-color:var(--cafe)}
+
+.pago-panel{display:flex;flex-direction:column;gap:14px}
+.pago-fila-doble{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pago-aviso{font-size:11px;color:#8a7a6c;line-height:1.5}
+.pago-aviso code{background:var(--beige);padding:1px 5px;border-radius:4px}
+
+/* Tarjeta visual, se actualiza al escribir */
+.tarjeta-preview{
+    background:linear-gradient(135deg,var(--cafe),var(--cafe2));
+    color:#fff;border-radius:14px;padding:22px;height:150px;
+    display:flex;flex-direction:column;justify-content:space-between;
+    box-shadow:0 14px 30px #00000040;font-family:'Montserrat',monospace;
+    position:relative;overflow:hidden
+}
+.tarjeta-preview::after{
+    content:"";position:absolute;right:-30px;top:-30px;width:140px;height:140px;
+    border-radius:50%;background:radial-gradient(circle,#ffffff14,transparent 70%)
+}
+.tarjeta-chip{width:38px;height:28px;border-radius:5px;background:linear-gradient(135deg,var(--dorado),#b8903f)}
+.tarjeta-marca{position:absolute;top:22px;right:22px;font-weight:700;font-size:15px;letter-spacing:1px;color:var(--dorado)}
+.tarjeta-numero{font-size:19px;letter-spacing:2px;margin:10px 0}
+.tarjeta-fila-inferior{display:flex;justify-content:space-between;font-size:13px}
+.tarjeta-label{display:block;font-size:9px;color:#d9c7b8;letter-spacing:1px;margin-bottom:2px}
+
+#paypalBotones{min-height:45px}
+.metodo-confirm{font-size:13px;color:#8a7a6c;margin-top:6px}

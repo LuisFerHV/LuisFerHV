@@ -37,7 +37,8 @@ foreach ($productos as $p) $total += $p['precio'] * ($carrito[$p['id']] ?? 0);
     <div class="checkout-info">
         <h2>Datos para tu pedido</h2>
         <p>Completa los datos para guardar tu pedido y generar un número de confirmación.</p>
-        <form action="procesar_pedido.php" method="post" class="checkout-form">
+
+        <form action="procesar_pedido.php" method="post" class="checkout-form" id="formPedido">
             <label>Nombre completo
                 <input type="text" name="nombre" required maxlength="120">
             </label>
@@ -51,7 +52,62 @@ foreach ($productos as $p) $total += $p['precio'] * ($carrito[$p['id']] ?? 0);
             <label>Notas del pedido
                 <textarea name="notas" rows="4" maxlength="1000" placeholder="Alguna indicación especial..."></textarea>
             </label>
-            <button class="btn" type="submit">Confirmar pedido · $<?php echo number_format($total,2); ?></button>
+
+            <input type="hidden" name="metodo_pago" id="metodoPago" value="">
+            <input type="hidden" name="referencia_pago" id="referenciaPago" value="">
+
+            <div class="pago-seccion">
+                <h3>¿Cómo quieres pagar?</h3>
+
+                <div class="pago-tabs" role="tablist">
+                    <button type="button" class="pago-tab activa" id="tabTarjeta" data-metodo="tarjeta">💳 Tarjeta</button>
+                    <button type="button" class="pago-tab" id="tabPaypal" data-metodo="paypal">🅿️ PayPal</button>
+                </div>
+
+                <div class="pago-panel" id="panelTarjeta">
+                    <div class="tarjeta-preview" id="tarjetaPreview">
+                        <div class="tarjeta-chip"></div>
+                        <div class="tarjeta-marca" id="tarjetaMarca"></div>
+                        <div class="tarjeta-numero" id="tarjetaNumeroVista">•••• •••• •••• ••••</div>
+                        <div class="tarjeta-fila-inferior">
+                            <div>
+                                <span class="tarjeta-label">Titular</span>
+                                <div id="tarjetaNombreVista">NOMBRE APELLIDO</div>
+                            </div>
+                            <div>
+                                <span class="tarjeta-label">Vence</span>
+                                <div id="tarjetaVenceVista">MM/AA</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <label>Nombre en la tarjeta
+                        <input type="text" id="tarjetaNombre" autocomplete="cc-name" placeholder="Como aparece en tu tarjeta">
+                    </label>
+                    <label>Número de tarjeta
+                        <input type="text" id="tarjetaNumero" inputmode="numeric" autocomplete="cc-number"
+                               maxlength="19" placeholder="0000 0000 0000 0000">
+                    </label>
+                    <div class="pago-fila-doble">
+                        <label>Vencimiento
+                            <input type="text" id="tarjetaVence" autocomplete="cc-exp" maxlength="5" placeholder="MM/AA">
+                        </label>
+                        <label>CVC
+                            <input type="text" id="tarjetaCvc" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="123">
+                        </label>
+                    </div>
+
+                    <button type="button" class="btn full" id="btnPagarTarjeta">Pagar $<?php echo number_format($total,2); ?> con tarjeta</button>
+                    <p class="pago-aviso"></p>
+                </div>
+
+                <div class="pago-panel" id="panelPaypal" hidden>
+                    <div id="paypalBotones"></div>
+                    <p class="pago-aviso" id="paypalAviso">
+                       
+                    </p>
+                </div>
+            </div>
         </form>
     </div>
 
@@ -69,6 +125,11 @@ foreach ($productos as $p) $total += $p['precio'] * ($carrito[$p['id']] ?? 0);
 </section>
 
 <?php include "footer.php"; ?>
+
+<script src="https://www.paypal.com/sdk/js?client-id=sb&currency=MXN"></script>
 <script src="script.js"></script>
+<script>
+    window.TOTAL_PEDIDO = <?php echo json_encode((float)$total); ?>;
+</script>
 </body>
 </html>
